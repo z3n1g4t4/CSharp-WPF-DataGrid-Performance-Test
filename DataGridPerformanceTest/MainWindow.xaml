@@ -1,0 +1,97 @@
+﻿<Window x:Class="DataGridPerformanceTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DataGridPerformanceTest"
+        mc:Ignorable="d" 
+        xmlns:gl="clr-namespace:System.Globalization;assembly=mscorlib"
+        Title="WPF - DataGrid Performance Test" Height="450" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Window.Resources>
+        <Style x:Key="CellTextRight" TargetType="{x:Type TextBlock}" >
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CellTextCenter" TargetType="{x:Type TextBlock}" >
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Padding" Value="5,0"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <DockPanel Grid.Row="0" Grid.Column="0" Margin="5">
+            <Label Content="Filter by name:"/>
+            <TextBox x:Name="TxtFilter" TextChanged="TxtFilter_TextChanged" VerticalContentAlignment="Center">
+                <TextBox.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="3"/>
+                    </Style>
+                </TextBox.Resources>
+            </TextBox>
+        </DockPanel>
+        <DataGrid x:Name="DgBusinessList" Grid.Row="1" Grid.Column="0" AutoGenerateColumns="False"
+                  ItemsSource="{Binding BusinessDataView, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                  IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Code1" Binding="{Binding Code1}" ElementStyle="{StaticResource CellTextCenter}"/>
+                <DataGridTextColumn Header="Code2" Binding="{Binding Code2}" IsReadOnly="True" ElementStyle="{StaticResource CellTextCenter}"/>
+                <DataGridTextColumn Header="SmallNumber" Binding="{Binding SmallNumber, StringFormat=N2, ConverterCulture={x:Static gl:CultureInfo.CurrentCulture}}" IsReadOnly="True" ElementStyle="{StaticResource CellTextRight}"/>
+                <DataGridTextColumn Header="BigNumber" Binding="{Binding BigNumber, StringFormat=N2, ConverterCulture={x:Static gl:CultureInfo.CurrentCulture}}" IsReadOnly="True" ElementStyle="{StaticResource CellTextRight}"/>
+                <DataGridTextColumn Header="Classification1" Binding="{Binding Classification1}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Classification2" Binding="{Binding Classification2}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="LastUpdate" Binding="{Binding LastUpdate, StringFormat=d, ConverterCulture={x:Static gl:CultureInfo.CurrentCulture}}" IsReadOnly="True" ElementStyle="{StaticResource CellTextCenter}" Width="*"/>
+            </DataGrid.Columns>
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" Cursor="Hand" Margin="0,5,0,0">
+                                            <Expander.Header>
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding ItemCount}" FontSize="9" VerticalAlignment="Top" Margin="3,0,0,0"/>
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <Expander.Content>
+                                                <ItemsPresenter Cursor="Arrow"/>
+                                            </Expander.Content>
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+        </DataGrid>
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Width="2" 
+                      Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" 
+                      Margin="5" ResizeBehavior="PreviousAndNext"/>
+        <Label Grid.Row="0" Grid.Column="2" Content="Log filter operation time (ms):" VerticalAlignment="Center"/>
+        <RichTextBox x:Name="TxtLog" Grid.Row="1" Grid.Column="2"/>
+        <DockPanel Grid.Row="2" Grid.Column="0">
+            <TextBlock Text="Total items:"/>
+            <TextBlock Text="{Binding BusinessDataView.Count}" Margin="5,0,0,0"/>
+        </DockPanel>
+    </Grid>
+</Window>
